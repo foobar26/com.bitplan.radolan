@@ -150,8 +150,9 @@ public class Header {
     String dim = section.get("GP");
     if (dim != null) {
       String[] parts = dim.split("x");
-      c.setDx(Integer.parseInt(parts[0].trim()));
-      c.setDy(Integer.parseInt(parts[1].trim()));
+      /* FIXED: Wrong assignment of X/Y */
+      c.setDy(Integer.parseInt(parts[0].trim()));
+      c.setDx(Integer.parseInt(parts[1].trim()));
       c.setPx(c.getDx());
       c.setPy(c.getDy()); // composite formats do not show elevation
     } else {

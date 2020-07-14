@@ -33,26 +33,61 @@ public class SingleByte {
   // parseSingleByte parses the single byte encoded composite as described in [1] and writes
   // into the previously created PlainData field of the composite.
   public static void parseSingleByte(Composite c) {
-    /*
-    last := len(c.PlainData) - 1
-    for i := range c.PlainData {
-      line, err := c.readLineSingleByte(reader)
-      if err != nil {
-        return err
-      }
-
-      err = c.decodeSingleByte(c.PlainData[last-i], line) // write vertically flipped
-      if err != nil {
-        return err
+    int last = c.PlainData.length - 1;
+    for (int y = 0; y < c.PlainData.length; y++) {
+      byte[] yline = readRowSingleByte(c, y);
+      try {
+        int yt = last - y; // write vertically flipped
+        int yw = c.PlainData[last - y].length;
+        decodeSingleByte(c, yt, yw, yline);
+      } catch (Exception e) {
+        c.error = e;
+        break;
       }
     }
-
-    return nil
-    */
   }
-/*
-  // readLineSingleByte reads a line until horizontal limit from the given reader
+
+  // readRowSingleByte reads a line until horizontal limit from the given reader
   // This method is used to get a line of single byte encoded data.
+  private static byte[] readRowSingleByte(Composite c, int y) {
+    byte[] yrow = new byte[c.getDx()];
+    for (int x = 0; x < c.getDx(); x++) {
+      yrow[x] = c.getByte(x, y);
+    }
+    return yrow;
+  }
+
+  // decodeSingleByte decodes the source line and writes to the given destination.
+  private static void decodeSingleByte(Composite c, int y, int xw, byte[] line) throws Exception {
+    if (xw != line.length) {
+      throw new Exception(String.format(
+              "decodeSingleByte destination size %d and source size %d are not even or equal",
+              xw, line.length));
+    }
+    for (int x = 0; x < xw; x++) {
+      float value = rvp6SingleByte(c, line[x]);
+      c.setValue(x, y, value);
+    }
+  }
+
+  // rvp6SingleByte converts the raw byte of single byte encoded
+  // composite products to radar video processor values (rvp-6). NaN may be returned
+  // when the no-data flag is set.
+  private static float rvp6SingleByte(Composite c, byte value) {
+    if (value == 250) {
+      return Float.NaN;
+    }
+
+    float conv = (float) c.rvp6Raw((int) value);  // set decimal point
+
+    if (c.getDataUnit() != Catalog.Unit.Unit_dBZ) {
+      return conv;
+    }
+
+    return Conversion.toDBZ(conv);
+  }
+
+/*
   func (c *Composite) readLineSingleByte(rd *bufio.Reader) (line []byte, err error) {
     line = make([]byte, c.Dx)
     _, err = io.ReadFull(rd, line)
@@ -62,7 +97,6 @@ public class SingleByte {
     return
   }
 
-  // decodeSingleByte decodes the source line and writes to the given destination.
   func (c *Composite) decodeSingleByte(dst []float32, line []byte) error {
     if len(dst) != len(line) {
       return newError("decodeSingleByte", "wrong destination or source size")

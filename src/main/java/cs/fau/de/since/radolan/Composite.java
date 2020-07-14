@@ -390,7 +390,13 @@ public class Composite extends ProjectionImpl implements RadarImage,GeoProjectio
    */
   public byte getByte(int x, int y) {
     int ofs = header.length();
-    int pos = y * getDx() * 2 + x + ofs;
+    int values = getPx() * getPy();
+    int length = getDataLength() / values;
+/*
+ FIXED: Was OutOfBounds for SingleByteEncoding, was before:
+    pos = y * getDx() * 2 + x + ofs;
+*/
+    int pos = y * getDx() * length + x + ofs;
     return bytes[pos];
   }
 
