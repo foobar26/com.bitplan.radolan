@@ -229,7 +229,7 @@ public class Radolan2Image {
     // Position now needs to be adapted to screen size
     DPoint vp = displayContext.composite.translateGridToView(gp,
         drawOnGlass.getWidth(), drawOnGlass.getHeight());
-    String text = String.format("%s - %.1f mm", loc.getName(), value);
+    String text = String.format("%s - %.1f " + displayContext.composite.getDataUnit(), loc.getName(), value);
     Circle circle = Draw.drawCircleWithText(displayContext.mapView.getDrawPane(),
         text, 4, Color.BLUE, vp.x, vp.y);
     if (debug)

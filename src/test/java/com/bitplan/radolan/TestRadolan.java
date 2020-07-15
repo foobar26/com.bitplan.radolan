@@ -68,6 +68,11 @@ public class TestRadolan extends BaseTest {
     }
   }
 
+  @Test
+  public void testWXProduct() {
+    testRadolan("https://opendata.dwd.de/weather/radar/composit/wx/raa01-wx_10000-2007141850-dwd---bin", 30, "wx.png", null,  "-d", "-l", "Herzogenrath","-z","100");
+  }
+
   /**
    * test the OpenData for the given product ry/rw for the past minutes taken
    * into account the given delay in minutes
