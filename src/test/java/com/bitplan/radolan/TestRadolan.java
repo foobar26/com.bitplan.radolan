@@ -27,7 +27,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -37,6 +39,11 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Consumer;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import com.bitplan.javafx.WaitableApp;
@@ -70,7 +77,45 @@ public class TestRadolan extends BaseTest {
 
   @Test
   public void testWXProduct() {
-    testRadolan("https://opendata.dwd.de/weather/radar/composit/wx/raa01-wx_10000-2007141850-dwd---bin", 30, "wx.png", null,  "-d", "-l", "Herzogenrath","-z","100");
+    testRadolan("https://opendata.dwd.de/weather/radar/composit/wx/raa01-wx_10000-latest-dwd---bin", 40, "wx.png", null,  "-d", "-l", "Herzogenrath","-z","100");
+  }
+
+  @Test
+  public void testFXProduct() throws Throwable {
+    int predictionTime = 10;
+    Radolan.testMode = true;
+    Radolan radolan = new Radolan();
+    radolan.setLocation("Herzogenrath");
+    radolan.setShowTimeSecs(10);
+    InputStream inputStream = new URL("https://opendata.dwd.de/weather/radar/composit/fx/FX_LATEST.tar.bz2").openStream();
+    BZip2CompressorInputStream gzipIn = new BZip2CompressorInputStream(inputStream);
+    int BUFFER_SIZE = 5000;
+    byte[] buffer = new byte[BUFFER_SIZE];
+    ByteArrayOutputStream bout = new ByteArrayOutputStream();
+    BufferedOutputStream bufout = new BufferedOutputStream(bout, BUFFER_SIZE);
+    ByteArrayInputStream bin = null;
+    try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn)) {
+      TarArchiveEntry entry;
+      while ((entry = (TarArchiveEntry) tarIn.getNextEntry()) != null) {
+        System.out.println("Entry: " + entry.getName());
+        String[] parts = StringUtils.split(entry.getName(), "_");
+        int filePrediction = Integer.parseInt(parts[1]);
+        if (filePrediction == predictionTime) {
+          int count = 0;
+          while ((count = tarIn.read(buffer, 0, BUFFER_SIZE)) != -1) {
+            bufout.write(buffer, 0, count);
+          }
+          bufout.close();
+          bin = new ByteArrayInputStream(bout.toByteArray());
+          break;
+        }
+      }
+    }
+    inputStream.close();
+    Composite comp = new Composite(bin);
+    radolan.showComposite(comp);
+    bin.close();
+    gzipIn.close();
   }
 
   /**

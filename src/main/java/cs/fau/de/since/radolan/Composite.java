@@ -288,7 +288,14 @@ public class Composite extends ProjectionImpl implements RadarImage,GeoProjectio
     inputStream.close();
   }
 
-  
+  public Composite(InputStream inputstream) throws Throwable {
+    this();
+    if (debug)
+      LOGGER.log(Level.INFO, "getting composite for url " + url);
+    read(inputstream);
+    init();
+    inputstream.close();
+  }
  
   /**
    * initialize me

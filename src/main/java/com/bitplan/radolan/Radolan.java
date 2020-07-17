@@ -291,8 +291,12 @@ public class Radolan extends Main implements SoftwareVersion {
    */
   public void showCompositeForUrl(String url) throws Throwable {
     Composite composite = new Composite(url);
+    this.showComposite(composite);
+  }
+
+  public void showComposite(Composite composite) throws Throwable {
     displayContext = new DisplayContext(composite, borderName,
-        Radolan2Image.borderColor, zoomKm, location);
+            Radolan2Image.borderColor, zoomKm, location);
     if (debug)
       LOGGER.log(Level.INFO, displayContext.title);
     if (this.showImage)
@@ -310,6 +314,12 @@ public class Radolan extends Main implements SoftwareVersion {
     if (!testMode)
       System.exit(exitCode);
   }
+
+  public void setShowTimeSecs(int timeSecs) {
+    this.showTimeSecs = timeSecs;
+  }
+
+  public void setLocation(String location) { this.location = location; }
 
   @Override
   public String getSupportEMail() {

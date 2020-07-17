@@ -23,9 +23,7 @@
  */
 package com.bitplan.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
