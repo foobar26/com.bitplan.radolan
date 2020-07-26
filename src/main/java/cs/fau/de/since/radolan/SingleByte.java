@@ -78,7 +78,7 @@ public class SingleByte {
       return Float.NaN;
     }
 
-    float conv = (float) c.rvp6Raw((int) value);  // set decimal point
+    float conv = (float) c.rvp6Raw(value & 0xff);  // set decimal point
 
     if (c.getDataUnit() != Catalog.Unit.Unit_dBZ) {
       return conv;
