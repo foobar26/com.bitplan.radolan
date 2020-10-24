@@ -189,6 +189,7 @@ public class Catalog {
     unitCatalog.put("W3", Unit.Unit_mm);
     unitCatalog.put("W4", Unit.Unit_mm);
     unitCatalog.put("WX", Unit.Unit_dBZ);
+    unitCatalog.put("WN", Unit.Unit_dBZ);
   }
 
   public static Catalog getInstance() {

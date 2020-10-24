@@ -117,6 +117,33 @@ public class TestRadolan extends BaseTest {
     gzipIn.close();
   }
 
+  @Test
+  public void testWNProduct() throws Throwable {
+    int predictionTime = 10;
+    Radolan.testMode = true;
+    Radolan radolan = new Radolan();
+    radolan.setLocation("Herzogenrath");
+    radolan.setShowTimeSecs(60);
+    InputStream inputStream = new URL("https://opendata.dwd.de/weather/radar/composit/wn/WN_LATEST_0" + predictionTime + ".bz2").openStream();
+    BZip2CompressorInputStream gzipIn = new BZip2CompressorInputStream(inputStream);
+    int BUFFER_SIZE = 5000;
+    byte[] buffer = new byte[BUFFER_SIZE];
+    ByteArrayOutputStream bout = new ByteArrayOutputStream();
+    BufferedOutputStream bufout = new BufferedOutputStream(bout, BUFFER_SIZE);
+    int count = 0;
+    while ((count = gzipIn.read(buffer, 0, BUFFER_SIZE)) != -1) {
+      bufout.write(buffer, 0, count);
+    }
+    bufout.close();
+    bout.close();
+    ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
+    inputStream.close();
+    Composite comp = new Composite(bin);
+    radolan.showComposite(comp);
+    bin.close();
+    gzipIn.close();
+  }
+
   /**
    * test the OpenData for the given product ry/rw for the past minutes taken
    * into account the given delay in minutes

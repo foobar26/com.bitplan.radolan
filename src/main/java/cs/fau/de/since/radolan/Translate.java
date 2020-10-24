@@ -48,6 +48,7 @@ public class Translate {
     nationalGrid, // resolution: 900km * 900km
     nationalPictureGrid, // resolution: 920km * 920km
     extendedNationalGrid, // resolution: 900km * 1100km
+    ultraExtendedNationalGrid,
     middleEuropeanGrid // resolution: 1400km * 1500km
   }
 
@@ -55,6 +56,8 @@ public class Translate {
   public static final IPoint nationalPictureGrid = minRes(new IPoint(920, 920));
   public static final IPoint extendedNationalGrid = minRes(
       new IPoint(900, 1100));
+  public static final IPoint ultraExtendedNationalGrid = minRes(
+          new IPoint(1100, 1200));
   public static final IPoint middleEuropeanGrid = minRes(
       new IPoint(1400, 1500));
 
@@ -97,6 +100,9 @@ public class Translate {
     if (d.x == middleEuropeanGrid.x && d.y == middleEuropeanGrid.y) {
       return GridType.middleEuropeanGrid;
     }
+    if (d.x == ultraExtendedNationalGrid.x && d.y == ultraExtendedNationalGrid.y) {
+      return GridType.ultraExtendedNationalGrid;
+    }
     return GridType.unknownGrid;
   }
 
@@ -121,6 +127,10 @@ public class Translate {
     case middleEuropeanGrid: // described in [5]
       return new CornerPoints(56.5423, -0.8654 // N, E
           , 43.8736, 18.2536 // N, E
+      );
+    case ultraExtendedNationalGrid: // described in [5]
+      return new CornerPoints(55.8658, 1.4355 // N, E
+              , 45.6835, 16.6019 // N, E
       );
     default:
 
