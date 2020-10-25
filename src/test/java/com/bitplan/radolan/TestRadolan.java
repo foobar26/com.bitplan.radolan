@@ -123,7 +123,7 @@ public class TestRadolan extends BaseTest {
     Radolan.testMode = true;
     Radolan radolan = new Radolan();
     radolan.setLocation("Herzogenrath");
-    radolan.setShowTimeSecs(60);
+    radolan.setShowTimeSecs(10);
     InputStream inputStream = new URL("https://opendata.dwd.de/weather/radar/composit/wn/WN_LATEST_0" + predictionTime + ".bz2").openStream();
     BZip2CompressorInputStream gzipIn = new BZip2CompressorInputStream(inputStream);
     int BUFFER_SIZE = 5000;
